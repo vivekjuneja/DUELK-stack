@@ -1,0 +1,5 @@
+./config
+elasticsearch-config
+elasticsearch-data
+elasticsearch
+./haproxy.cfg
