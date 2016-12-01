@@ -1,7 +1,89 @@
  version: '2'
+
  services:
-   web:
-     image: python:2.7
-     command: python -m SimpleHTTPServer 8000
+   elastic:
+     environment: 
+       - LOGSPOUT=ignore
+     image: elasticsearch:2.4.0
+     command: -Des.network.host=0.0.0.0 -Dhttp.cors.enabled=true -Dhttp.cors.allow-origin=*
+     volumes:
+        - ${PWD}/elasticsearch-config:/usr/share/elasticsearch/config
      ports:
-       - "8000:8000"
+       - "9200:9200"
+       - "9300:9300"
+
+   logstash1:
+     environment: 
+       - counter_seed=1
+       - counter_increment=3
+       - LOGSPOUT=ignore
+     command: /opt/logstash/bin/logstash agent -f /config-dir/logstash.conf
+     volumes:
+       - ${PWD}/logstash-config:/config-dir
+     image: logstash:6
+     ports:
+       - "5001:5001"
+     depends_on:
+       - elastic
+
+   logstash2:
+     environment: 
+       - counter_seed=2
+       - counter_increment=3
+       - LOGSPOUT=ignore
+     command: /opt/logstash/bin/logstash agent -f /config-dir/logstash.conf
+     volumes:
+       - ${PWD}/logstash-config:/config-dir
+     image: logstash:6
+     ports:
+       - "5002:5002"
+     depends_on:
+       - elastic
+
+   haproxy:
+     environment: 
+       - LOGSPOUT=ignore
+     volumes:
+       - ${PWD}/haproxy-config/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+     image: haproxy
+     ports:
+       - "80:80"
+     depends_on:
+       - logstash1
+       - logstash2     
+
+   logspout:
+     environment: 
+       - LOGSPOUT=ignore
+       - ROUTE_URIS=logstash+tcp://haproxy:80
+       - DEBUG=true
+     command: /opt/logstash/bin/logstash agent -f /config-dir/logstash.conf
+     volumes:
+       - /var/run/docker.sock:/var/run/docker.sock
+     image: vivekjuneja/logspout:3
+     depends_on:
+       - haproxy
+
+   logspout:
+     environment: 
+       - LOGSPOUT=ignore
+       - ROUTE_URIS=logstash+tcp://haproxy:80
+       - DEBUG=true
+     command: /opt/logstash/bin/logstash agent -f /config-dir/logstash.conf
+     volumes:
+       - /var/run/docker.sock:/var/run/docker.sock
+     image: vivekjuneja/logspout:3
+     depends_on:
+       - haproxy
+
+   kibana:
+     environment: 
+       - LOGSPOUT=ignore
+       - ELASTICSEARCH_URL=http://10.53.34.162:9200
+     volumes:
+       - /var/run/docker.sock:/var/run/docker.sock
+     image: kibana:4.2.2
+     ports:
+       - "5601:5601"
+     depends_on:
+       - elastic
