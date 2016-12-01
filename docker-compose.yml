@@ -55,21 +55,8 @@
    logspout:
      environment: 
        - LOGSPOUT=ignore
-       - ROUTE_URIS=logstash+tcp://haproxy:80
+       - ROUTE_URIS=logstash+tcp://10.53.34.162:5001,logstash+tcp://10.53.34.162:5002
        - DEBUG=true
-     command: /opt/logstash/bin/logstash agent -f /config-dir/logstash.conf
-     volumes:
-       - /var/run/docker.sock:/var/run/docker.sock
-     image: vivekjuneja/logspout:3
-     depends_on:
-       - haproxy
-
-   logspout:
-     environment: 
-       - LOGSPOUT=ignore
-       - ROUTE_URIS=logstash+tcp://haproxy:80
-       - DEBUG=true
-     command: /opt/logstash/bin/logstash agent -f /config-dir/logstash.conf
      volumes:
        - /var/run/docker.sock:/var/run/docker.sock
      image: vivekjuneja/logspout:3
