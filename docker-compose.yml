@@ -12,6 +12,7 @@
        - "9200:9200"
        - "9300:9300"
 
+
    logstash1:
      environment: 
        - counter_seed=1
@@ -24,7 +25,7 @@
      ports:
        - "5001:5000"
        - "5001:5000/udp"
-       - "12203:12201"
+       - "12203:12201/udp"
      depends_on:
        - elastic
 
@@ -41,7 +42,7 @@
      ports:
        - "5002:5000"
        - "5002:5000/udp"
-       - "12202:12201"
+       - "12202:12201/udp"
      depends_on:
        - elastic
 
@@ -58,16 +59,13 @@
      depends_on:
        - elastic
 
-   udploadbalance:
+   udpbalancer:
      environment: 
        - LOGSPOUT=ignore
-       - ELASTICSEARCH_URL=http://elastic:9200
-     volumes:
-       - ${PWD}/servers.json:/servers.json
-     image: vdemedes/udp-balancer
-     command: /servers.json
+       - servers=['logstash1:12201','logstash2:12201']
+     image: vivekjuneja/udprr:11
      ports:
-       - "3000:3000/udp"
+       - "1111:1111/udp"
      depends_on:
-       - logstash1
        - logstash2
+       - logstash1
