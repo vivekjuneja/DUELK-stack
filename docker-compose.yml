@@ -22,9 +22,12 @@
        - ${PWD}/logstash-config:/config-dir
      image: logstash:6
      ports:
-       - "5001:5001"
+       - "5001:5000"
+       - "5001:5000/udp"
+       - "12203:12201"
      depends_on:
        - elastic
+
 
    logstash2:
      environment: 
@@ -36,37 +39,17 @@
        - ${PWD}/logstash-config:/config-dir
      image: logstash:6
      ports:
-       - "5002:5002"
+       - "5002:5000"
+       - "5002:5000/udp"
+       - "12202:12201"
      depends_on:
        - elastic
 
-   haproxy:
-     environment: 
-       - LOGSPOUT=ignore
-     volumes:
-       - ${PWD}/haproxy-config/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
-     image: haproxy
-     ports:
-       - "80:80"
-     depends_on:
-       - logstash1
-       - logstash2     
-
-   logspout:
-     environment: 
-       - LOGSPOUT=ignore
-       - ROUTE_URIS=logstash+tcp://10.53.34.162:5001,logstash+tcp://10.53.34.162:5002
-       - DEBUG=true
-     volumes:
-       - /var/run/docker.sock:/var/run/docker.sock
-     image: vivekjuneja/logspout:3
-     depends_on:
-       - haproxy
 
    kibana:
      environment: 
        - LOGSPOUT=ignore
-       - ELASTICSEARCH_URL=http://10.53.34.162:9200
+       - ELASTICSEARCH_URL=http://elastic:9200
      volumes:
        - /var/run/docker.sock:/var/run/docker.sock
      image: kibana:4.2.2
@@ -74,3 +57,17 @@
        - "5601:5601"
      depends_on:
        - elastic
+
+   udploadbalance:
+     environment: 
+       - LOGSPOUT=ignore
+       - ELASTICSEARCH_URL=http://elastic:9200
+     volumes:
+       - ${PWD}/servers.json:/servers.json
+     image: vdemedes/udp-balancer
+     command: /servers.json
+     ports:
+       - "3000:3000/udp"
+     depends_on:
+       - logstash1
+       - logstash2
