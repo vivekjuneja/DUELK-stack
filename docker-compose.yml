@@ -6,8 +6,6 @@
        - LOGSPOUT=ignore
      image: elasticsearch:2.4.0
      command: -Des.network.host=0.0.0.0 -Dhttp.cors.enabled=true -Dhttp.cors.allow-origin=*
-     volumes:
-        - ${PWD}/elasticsearch-config:/usr/share/elasticsearch/config
      ports:
        - "9200:9200"
        - "9300:9300"
@@ -21,7 +19,7 @@
      command: /opt/logstash/bin/logstash agent -f /config-dir/logstash.conf
      volumes:
        - ${PWD}/logstash-config:/config-dir
-     image: logstash:6
+     image: vivekjuneja/logstash:6
      ports:
        - "5001:5000"
        - "5001:5000/udp"
@@ -38,7 +36,7 @@
      command: /opt/logstash/bin/logstash agent -f /config-dir/logstash.conf
      volumes:
        - ${PWD}/logstash-config:/config-dir
-     image: logstash:6
+     image: vivekjuneja/logstash:6
      ports:
        - "5002:5000"
        - "5002:5000/udp"
