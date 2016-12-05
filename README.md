@@ -11,7 +11,8 @@ The Logstash servers expose GELF UDP Port and are balanced in a round robin way 
 
 The Logstash Docker image is a custom image that uses a Logstash Sequence filter. This filter is a ruby gem that takes TWO inputs from the OS Environment variable. One is the sequence_seed and other is sequence iterator. To explain this, let us first understand the solution :-
 
-
+![DUELK Stack solution]
+(https://raw.githubusercontent.com/vivekjuneja/DUELK-stack/master/DUELK-stack.jpg)
 
 
 
