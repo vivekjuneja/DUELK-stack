@@ -1,0 +1,83 @@
+ version: '2'
+
+ services:
+   elastic:
+     environment: 
+       - LOGSPOUT=ignore
+     image: elasticsearch:2.4.0
+     command: -Des.network.host=0.0.0.0 -Dhttp.cors.enabled=true -Dhttp.cors.allow-origin=*
+     volumes:
+        - ${PWD}/elasticsearch-config:/usr/share/elasticsearch/config
+     ports:
+       - "9200:9200"
+       - "9300:9300"
+
+
+   logstash1:
+     environment: 
+       - counter_seed=1
+       - counter_increment=3
+       - LOGSPOUT=ignore
+     command: /opt/logstash/bin/logstash agent -f /config-dir/logstash.conf
+     volumes:
+       - ${PWD}/logstash-config:/config-dir
+     image: logstash:6
+     ports:
+       - "5001:5000"
+       - "5001:5000/udp"
+       - "12203:12201/udp"
+     depends_on:
+       - elastic
+
+
+   logstash2:
+     environment: 
+       - counter_seed=2
+       - counter_increment=3
+       - LOGSPOUT=ignore
+     command: /opt/logstash/bin/logstash agent -f /config-dir/logstash.conf
+     volumes:
+       - ${PWD}/logstash-config:/config-dir
+     image: logstash:6
+     ports:
+       - "5002:5000"
+       - "5002:5000/udp"
+       - "12202:12201/udp"
+     depends_on:
+       - elastic
+
+
+   kibana:
+     environment: 
+       - LOGSPOUT=ignore
+       - ELASTICSEARCH_URL=http://elastic:9200
+     volumes:
+       - /var/run/docker.sock:/var/run/docker.sock
+     image: kibana:4.2.2
+     ports:
+       - "5601:5601"
+     depends_on:
+       - elastic
+
+   udpbalancer:
+     environment: 
+       - LOGSPOUT=ignore
+       - servers=['logstash1:12201','logstash2:12201']
+       - servers=['logstash1:12201','logstash2:12201 ']
+     image: vivekjuneja/udprr:11
+     ports:
+       - "1111:1111/udp"
+     depends_on:
+       - logstash2
+       - logstash1
+
+   logspout:
+     environment: 
+       - LOGSPOUT=ignore
+       - ROUTE_URIS=logstash+udp://udpbalancer:1111
+       - DEBUG=true
+     volumes:
+       - /var/run/docker.sock:/var/run/docker.sock
+     image: vivekjuneja/logspout:3
+     depends_on:
+       - udpbalancer
