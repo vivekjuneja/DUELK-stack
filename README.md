@@ -1,4 +1,4 @@
-# KHELL-stack
+# DUELK-stack
 Provision a full Log platform stack : Kibana, HAProxy, Elasticsearch, Logstash and Logspout. Allows for Distributed Ordered logs using Log sequence filter.
 
 This project demonstrates how to handle distributed logs from Docker containers in a Containerized environment. We use Docker GELF Logging driver to send logs to a UDP load balancer which is then sent to 2 instances of Logstash. The Logstash servers are packaged with a custom filter that generates a sequence number pattern, and is then added to each log as an extra `sequence` field. This is sent over to Elasticsearch. Kibana 4 is used as a Log dashboard. 
@@ -11,8 +11,8 @@ The Logstash servers expose GELF UDP Port and are balanced in a round robin way 
 
 The Logstash Docker image is a custom image that uses a Logstash Sequence filter. This filter is a ruby gem that takes TWO inputs from the OS Environment variable. One is the sequence_seed and other is sequence iterator. To explain this, let us first understand the solution :-
 
-
-
+![DUELK Stack solution]
+(https://raw.githubusercontent.com/vivekjuneja/DUELK-stack/master/DUELK-stack.jpg)
 
 
 
