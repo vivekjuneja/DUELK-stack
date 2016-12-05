@@ -11,14 +11,21 @@ The Logstash servers expose GELF UDP Port and are balanced in a round robin way 
 
 The Logstash Docker image is a custom image that uses a Logstash Sequence filter. This filter is a ruby gem that takes TWO inputs from the OS Environment variable. One is the sequence_seed and other is sequence iterator. To explain this, let us first understand the solution :-
 
-![DUELK Stack solution]
+![DUELK Stack solution with Docker Graylog Driver]
 (https://raw.githubusercontent.com/vivekjuneja/DUELK-stack/master/DUELK-stack.jpg)
 
 
+![DUELK Stack solution with Logspout Logstash Adapter]
+(https://raw.githubusercontent.com/vivekjuneja/DUELK-stack/master/DUELK-stack-logspout.jpg)
+
+
+Demo steps :-
 
 1. `docker-compose up`
 
 2. `docker run --log-opt tag="busybox-test" --log-opt labels=label1,label2 --log-opt env=env1,env2   --log-driver=gelf --log-opt gelf-address=udp://192.168.0.13:1111 -e TYPE=testing908 -v $(pwd)/sample-logs4.txt:/sample-logs4.txt:ro busybox cat /sample-logs4.txt`
 
 
+3. `docker-compose -f docker-compose-logspout.yml`
 
+4. `docker run -e TYPE=testing908 -v $(pwd)/sample-logs4.txt:/sample-logs4.txt:ro busybox cat /sample-logs4.txt`
