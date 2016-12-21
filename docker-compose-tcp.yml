@@ -22,8 +22,6 @@
      image: vivekjuneja/logstash:6
      ports:
        - "5001:5000"
-       - "5001:5000/udp"
-       - "12203:12201/udp"
      depends_on:
        - elastic
 
@@ -39,8 +37,6 @@
      image: vivekjuneja/logstash:6
      ports:
        - "5002:5000"
-       - "5002:5000/udp"
-       - "12202:12201/udp"
      depends_on:
        - elastic
 
@@ -55,13 +51,14 @@
      depends_on:
        - elastic
 
-   udpbalancer:
+   haproxy:
      environment: 
        - LOGSPOUT=ignore
-       - servers=['logstash1:12201','logstash2:12201']
-     image: vivekjuneja/udprr:11
+     volumes:
+       - ${PWD}/haproxy-config/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+     image: haproxy
      ports:
-       - "1111:1111/udp"
+       - "80:80"
      depends_on:
-       - logstash2
        - logstash1
+       - logstash2

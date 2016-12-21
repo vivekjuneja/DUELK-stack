@@ -1,0 +1,16 @@
+filebeat:
+  prospectors:
+    -
+      paths:
+
+      - /var/log/messages
+      input_type: log
+      document_type: docker_syslog
+output:
+  logstash:
+    hosts: ["haproxy:80"]
+shipper:
+logging:
+  files:
+    rotateeverybytes: 10485760 # = 10MB
+

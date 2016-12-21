@@ -1,0 +1,11 @@
+filebeat:
+    prospectors:
+        -
+            paths:
+                - "/var/log/messages"
+            document_type: docker-logs
+    output:
+        logstash:
+            enabled: true
+            hosts: ["haproxy:80"]
+            index: logstash
