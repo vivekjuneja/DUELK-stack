@@ -8,7 +8,8 @@ filebeat:
       document_type: docker_syslog
 output:
   logstash:
-    hosts: ["haproxy:80"]
+    hosts: ["logstash1:5000", "logstash2:5000"]
+    loadbalance: true
 shipper:
 logging:
   files:

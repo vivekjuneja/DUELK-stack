@@ -3,6 +3,8 @@
  services:
    elastic:
      image: elasticsearch:2.4.0
+     volumes:
+       - /etc/timezone:/etc/timezone
      command: -Des.network.host=0.0.0.0 -Dhttp.cors.enabled=true -Dhttp.cors.allow-origin=*
      ports:
        - "9200:9200"
@@ -16,6 +18,7 @@
      command: /opt/logstash/bin/logstash agent -f /config-dir/logstash.conf
      volumes:
        - ${PWD}/logstash-config:/config-dir
+       - /etc/timezone:/etc/timezone
      image: vivekjuneja/logstash:6
      ports:
        - "5001:5000"
@@ -32,6 +35,7 @@
      command: /opt/logstash/bin/logstash agent -f /config-dir/logstash.conf
      volumes:
        - ${PWD}/logstash-config:/config-dir
+       - /etc/timezone:/etc/timezone
      image: vivekjuneja/logstash:6
      ports:
        - "5002:5000"
@@ -44,6 +48,8 @@
    kibana:
      environment: 
        - ELASTICSEARCH_URL=http://elastic:9200
+     volumes:
+       - /etc/timezone:/etc/timezone
      image: kibana:4.6.3
      ports:
        - "5601:5601"
@@ -54,6 +60,7 @@
    haproxy:
      volumes:
        - ${PWD}/haproxy-config/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+       - /etc/timezone:/etc/timezone
      image: haproxy
      ports:
        - "80:80"
@@ -66,6 +73,7 @@
      volumes:
        - ${PWD}/filebeat/filebeat.yml:/etc/filebeat/filebeat.yml
        - /var/log/messages:/var/log/messages
+       - /etc/timezone:/etc/timezone
      image: olinicola/filebeat:1.2.3
      depends_on:
        - haproxy
