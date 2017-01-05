@@ -20,12 +20,10 @@
        - ${PWD}/logstash-config:/config-dir
        - /etc/timezone:/etc/timezone
      image: vivekjuneja/logstash:6
-     ports:
-       - "5001:5000"
-       - "5001:5000/udp"
-       - "12203:12201/udp"
      depends_on:
        - elastic
+       - zookeeper
+       - kafka
 
 
    logstash2:
@@ -37,12 +35,10 @@
        - ${PWD}/logstash-config:/config-dir
        - /etc/timezone:/etc/timezone
      image: vivekjuneja/logstash:6
-     ports:
-       - "5002:5000"
-       - "5002:5000/udp"
-       - "12202:12201/udp"
      depends_on:
        - elastic
+       - zookeeper
+       - kafka
 
 
    kibana:
@@ -56,7 +52,6 @@
      depends_on:
        - elastic
 
-
    filebeat:
      command: /bin/filebeat -e -v -d "*" -c /etc/filebeat/filebeat.yml
      volumes:
@@ -65,9 +60,54 @@
        - /etc/timezone:/etc/timezone
      image: prima/filebeat:latest
      depends_on:
-       - logstash1
-       - logstash2
+       - kafka
 
-    
+   callee:
+     environment: 
+       - PORT=8000
+       - TIMEINSECONDS=2      
+       - ENV=prod
+       - PROJECT=microservice
+     ports:
+       - "8000:8000"
+     image: callee:latest
+     logging:
+       driver: "syslog"
+       options:
+         syslog-facility: "daemon"
+         tag: "docker/{{ (.ExtraAttributes nil).ENV }}/{{ (.ExtraAttributes nil).PROJECT }}"
+         env: "ENV,PROJECT"
+         labels: "busybox"
+
+   caller:
+     environment: 
+       - PORT=8001
+       - CALLEE_HOSTPORT=callee:8000
+       - ENV=prod
+       - PROJECT=microservice
+     ports:
+       - "8001:8001"
+     image: caller:latest
+     logging:
+       driver: "syslog"
+       options:
+         syslog-facility: "daemon"
+         tag: "docker/{{ (.ExtraAttributes nil).ENV }}/{{ (.ExtraAttributes nil).PROJECT }}"
+         env: "ENV,PROJECT"
+         labels: "busybox"
+
+   zookeeper:
+     image: wurstmeister/zookeeper
+     ports:
+       - "2181:2181"
+   kafka:
+     build: ./kafka/
+     ports:
+       - "9092:9092"
+     environment:
+       KAFKA_ADVERTISED_HOST_NAME: 192.168.99.101
+       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+     volumes:
+       - /var/run/docker.sock:/var/run/docker.sock
 
 

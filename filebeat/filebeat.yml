@@ -7,9 +7,14 @@ filebeat:
       input_type: log
       document_type: docker_syslog
 output:
-  logstash:
-    hosts: ["logstash1:5000", "logstash2:5000"]
-    loadbalance: true
+  console:
+    pretty: true
+  kafka:
+    hosts: ["kafka:9092"]
+    topic: "logstash"
+    required_acks: 1
+    compression: gzip
+    max_message_bytes: 1000000
 shipper:
 logging:
   files:
