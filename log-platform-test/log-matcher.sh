@@ -1,12 +1,12 @@
 #/bin/bash
 
 
-# $1 ---> logstash index date part
-# $LOG_FILTER_1 ---> traceid
-# $RAW_LOG_PATH ---> raw log file path
-# $4 ---> persist logs if asked to "persist"
-
-## Defaults assigned here
+## Algorithm 
+# 1. Get the logs from source - log dump (local file) or a remote location (via SSH)
+# 2. Process the source logs based on two filters - this may be some kind of log classifiers like TRACEID or any keyword
+# 3. Get the logs from Elasticsearch - order the logs based on the required field in ascending order.
+# 4. Process the logs from Elasticsearch based on the same two filters as in step 2 
+# 5. Compare the Processed logs from Step 2 and Step 4, and see if they are identical or not
 
 SORT_FIELD_ASC="asc"
 SORT_FIELD_DESC="desc"
