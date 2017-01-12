@@ -11,7 +11,7 @@ output:
     pretty: true
   kafka:
     hosts: ["kafka:9092"]
-    topic: "logstash"
+    topic: "logstash2"
     required_acks: 1
     compression: gzip
     max_message_bytes: 1000000
