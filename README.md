@@ -36,8 +36,8 @@ File: `docker-compose-syslog.yml`
 `docker run -v $(pwd)/sample.log:/logs/test-log.1:ro --log-opt syslog-facility=daemon --log-driver syslog --log-opt tag="docker/{{ (.ExtraAttributes nil).ENV }}/{{ (.ExtraAttributes nil).PROJECT }}"  --log-opt env=ENV,PROJECT --log-opt labels=busy1 -e ENV=prod -e PROJECT=simple-project busybox cat /logs/test-log.1`
 
 
-![DUELK Stack solution with Logspout Logstash Adapter]
-(https://raw.githubusercontent.com/vivekjuneja/DUELK-stack/master/DUELK-stack-logspout.jpg)
+![DUELK Stack solution with Filebeat and Logstash]
+(https://raw.githubusercontent.com/vivekjuneja/DUELK-stack/master/DUELK-stack-syslog.jpg)
 
 
 *Solution #4 - Using Logstash with Filebeat, Syslog and Kafka*
@@ -46,6 +46,6 @@ File: `docker-compose-syslog-kafka.yml`
 
 `docker run -v $(pwd)/sample.log:/logs/test-log.1:ro --log-opt syslog-facility=daemon --log-driver syslog --log-opt tag="docker/{{ (.ExtraAttributes nil).ENV }}/{{ (.ExtraAttributes nil).PROJECT }}"  --log-opt env=ENV,PROJECT --log-opt labels=busy1 -e ENV=prod -e PROJECT=simple-project busybox cat /logs/test-log.1`
 
-![DUELK Stack solution with Logspout Logstash Adapter]
-(https://raw.githubusercontent.com/vivekjuneja/DUELK-stack/master/DUELK-stack-logspout.jpg)
+![DUELK Stack solution with Kafka, Filebeat and Logstash]
+(https://raw.githubusercontent.com/vivekjuneja/DUELK-stack/master/DUELK-stack-kafka-syslog.jpg)
 
