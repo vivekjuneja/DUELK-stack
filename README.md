@@ -11,36 +11,40 @@ The Logstash servers expose GELF UDP Port and are balanced in a round robin way 
 
 The Logstash Docker image is a custom image that uses a Logstash Sequence filter. This filter is a ruby gem that takes TWO inputs from the OS Environment variable. One is the sequence_seed and other is sequence iterator. To explain this, let us first understand the solution :-
 
+
 *Solution #1 - Using Docker Graylog Driver*
 
-1. File: `docker-compose.yml`
+File: `docker-compose.yml`
 
-	`docker run --log-opt tag="busybox-test" --log-opt labels=label1,label2 --log-opt env=env1,env2   --log-driver=gelf --log-opt gelf-address=udp://192.168.0.13:1111 -e TYPE=testing908 -v $(pwd)/sample-logs4.txt:/sample-logs4.txt:ro busybox cat /sample-logs4.txt`
+`docker run --log-opt tag="busybox-test" --log-opt labels=label1,label2 --log-opt env=env1,env2   --log-driver=gelf --log-opt gelf-address=udp://192.168.0.13:1111 -e TYPE=testing908 -v $(pwd)/sample-logs4.txt:/sample-logs4.txt:ro busybox cat /sample-logs4.txt`
 
 ![DUELK Stack solution with Docker Graylog Driver]
 (https://raw.githubusercontent.com/vivekjuneja/DUELK-stack/master/DUELK-stack.jpg)
 
-2. File: `docker-compose-logspout.yml`
 
 *Solution #2 - Using Logspout with Logstash Adapter*
 
-![DUELK Stack solution with Logspout Logstash Adapter]
-(https://raw.githubusercontent.com/vivekjuneja/DUELK-stack/master/DUELK-stack-logspout.jpg)
-
-3. File: `docker-compose-syslog.yml`
-
-	docker run -v $(pwd)/sample.log:/logs/test-log.1:ro --log-opt syslog-facility=daemon --log-driver syslog --log-opt tag="docker/{{ (.ExtraAttributes nil).ENV }}/{{ (.ExtraAttributes nil).PROJECT }}"  --log-opt env=ENV,PROJECT --log-opt labels=busy1 -e ENV=prod -e PROJECT=simple-project busybox cat /logs/test-log.1
-
-*Solution #2 - Using Logstash with Filebeat and Syslog*
+File: `docker-compose-logspout.yml`
 
 ![DUELK Stack solution with Logspout Logstash Adapter]
 (https://raw.githubusercontent.com/vivekjuneja/DUELK-stack/master/DUELK-stack-logspout.jpg)
 
-4. File: `docker-compose-syslog-kafka.yml`
+*Solution #3 - Using Logstash with Filebeat and Syslog*
 
-	docker run -v $(pwd)/sample.log:/logs/test-log.1:ro --log-opt syslog-facility=daemon --log-driver syslog --log-opt tag="docker/{{ (.ExtraAttributes nil).ENV }}/{{ (.ExtraAttributes nil).PROJECT }}"  --log-opt env=ENV,PROJECT --log-opt labels=busy1 -e ENV=prod -e PROJECT=simple-project busybox cat /logs/test-log.1
+File: `docker-compose-syslog.yml`
 
-*Solution #2 - Using Logstash with Filebeat, Syslog and Kafka*
+`docker run -v $(pwd)/sample.log:/logs/test-log.1:ro --log-opt syslog-facility=daemon --log-driver syslog --log-opt tag="docker/{{ (.ExtraAttributes nil).ENV }}/{{ (.ExtraAttributes nil).PROJECT }}"  --log-opt env=ENV,PROJECT --log-opt labels=busy1 -e ENV=prod -e PROJECT=simple-project busybox cat /logs/test-log.1`
+
+
+![DUELK Stack solution with Logspout Logstash Adapter]
+(https://raw.githubusercontent.com/vivekjuneja/DUELK-stack/master/DUELK-stack-logspout.jpg)
+
+
+*Solution #4 - Using Logstash with Filebeat, Syslog and Kafka*
+
+File: `docker-compose-syslog-kafka.yml`
+
+`docker run -v $(pwd)/sample.log:/logs/test-log.1:ro --log-opt syslog-facility=daemon --log-driver syslog --log-opt tag="docker/{{ (.ExtraAttributes nil).ENV }}/{{ (.ExtraAttributes nil).PROJECT }}"  --log-opt env=ENV,PROJECT --log-opt labels=busy1 -e ENV=prod -e PROJECT=simple-project busybox cat /logs/test-log.1`
 
 ![DUELK Stack solution with Logspout Logstash Adapter]
 (https://raw.githubusercontent.com/vivekjuneja/DUELK-stack/master/DUELK-stack-logspout.jpg)
