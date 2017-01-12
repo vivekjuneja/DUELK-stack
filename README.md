@@ -13,22 +13,35 @@ The Logstash Docker image is a custom image that uses a Logstash Sequence filter
 
 *Solution #1 - Using Docker Graylog Driver*
 
+1. File: `docker-compose.yml`
+
+	`docker run --log-opt tag="busybox-test" --log-opt labels=label1,label2 --log-opt env=env1,env2   --log-driver=gelf --log-opt gelf-address=udp://192.168.0.13:1111 -e TYPE=testing908 -v $(pwd)/sample-logs4.txt:/sample-logs4.txt:ro busybox cat /sample-logs4.txt`
+
 ![DUELK Stack solution with Docker Graylog Driver]
 (https://raw.githubusercontent.com/vivekjuneja/DUELK-stack/master/DUELK-stack.jpg)
+
+2. File: `docker-compose-logspout.yml`
 
 *Solution #2 - Using Logspout with Logstash Adapter*
 
 ![DUELK Stack solution with Logspout Logstash Adapter]
 (https://raw.githubusercontent.com/vivekjuneja/DUELK-stack/master/DUELK-stack-logspout.jpg)
 
+3. File: `docker-compose-syslog.yml`
 
-Demo steps :-
+	docker run -v $(pwd)/sample.log:/logs/test-log.1:ro --log-opt syslog-facility=daemon --log-driver syslog --log-opt tag="docker/{{ (.ExtraAttributes nil).ENV }}/{{ (.ExtraAttributes nil).PROJECT }}"  --log-opt env=ENV,PROJECT --log-opt labels=busy1 -e ENV=prod -e PROJECT=simple-project busybox cat /logs/test-log.1
 
-1. `docker-compose up`
+*Solution #2 - Using Logstash with Filebeat and Syslog*
 
-2. `docker run --log-opt tag="busybox-test" --log-opt labels=label1,label2 --log-opt env=env1,env2   --log-driver=gelf --log-opt gelf-address=udp://192.168.0.13:1111 -e TYPE=testing908 -v $(pwd)/sample-logs4.txt:/sample-logs4.txt:ro busybox cat /sample-logs4.txt`
+![DUELK Stack solution with Logspout Logstash Adapter]
+(https://raw.githubusercontent.com/vivekjuneja/DUELK-stack/master/DUELK-stack-logspout.jpg)
 
+4. File: `docker-compose-syslog-kafka.yml`
 
-3. `docker-compose -f docker-compose-logspout.yml`
+	docker run -v $(pwd)/sample.log:/logs/test-log.1:ro --log-opt syslog-facility=daemon --log-driver syslog --log-opt tag="docker/{{ (.ExtraAttributes nil).ENV }}/{{ (.ExtraAttributes nil).PROJECT }}"  --log-opt env=ENV,PROJECT --log-opt labels=busy1 -e ENV=prod -e PROJECT=simple-project busybox cat /logs/test-log.1
 
-4. `docker run -e TYPE=testing908 -v $(pwd)/sample-logs4.txt:/sample-logs4.txt:ro busybox cat /sample-logs4.txt`
+*Solution #2 - Using Logstash with Filebeat, Syslog and Kafka*
+
+![DUELK Stack solution with Logspout Logstash Adapter]
+(https://raw.githubusercontent.com/vivekjuneja/DUELK-stack/master/DUELK-stack-logspout.jpg)
+
