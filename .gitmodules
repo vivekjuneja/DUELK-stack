@@ -1,0 +1,3 @@
+[submodule "elktail"]
+	path = elktail
+	url = git@github.com:vivekjuneja/elktail.git
