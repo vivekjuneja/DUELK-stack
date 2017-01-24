@@ -15,9 +15,9 @@
      environment: 
        - counter_seed=1
        - counter_increment=3
-     command: /opt/logstash/bin/logstash agent -f /config-dir/logstash1.conf
+     command: /opt/logstash/bin/logstash agent -f /config-dir/logstash.conf
      volumes:
-       - ${PWD}/logstash-config:/config-dir
+       - ${PWD}/logstash-config/logstash.conf:/config-dir/logstash.conf:ro
        - /etc/timezone:/etc/timezone
      image: vivekjuneja/logstash:6
      ports:
@@ -32,9 +32,9 @@
      environment: 
        - counter_seed=2
        - counter_increment=3
-     command: /opt/logstash/bin/logstash agent -f /config-dir/logstash2.conf
+     command: /opt/logstash/bin/logstash agent -f /config-dir/logstash.conf
      volumes:
-       - ${PWD}/logstash-config:/config-dir
+       - ${PWD}/logstash-config/logstash.conf:/config-dir/logstash.conf:ro
        - /etc/timezone:/etc/timezone
      image: vivekjuneja/logstash:6
      ports:
@@ -60,7 +60,7 @@
    filebeat:
      command: /bin/filebeat -e -v -d "*" -c /etc/filebeat/filebeat.yml
      volumes:
-       - ${PWD}/filebeat/filebeat.yml:/etc/filebeat/filebeat.yml
+       - ${PWD}/filebeat/filebeat_directlogstash.yml:/etc/filebeat/filebeat.yml
        - /var/log/messages:/var/log/messages
        - /etc/timezone:/etc/timezone
      image: prima/filebeat:latest
